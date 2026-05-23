@@ -1,0 +1,117 @@
+CREATE DATABASE IF NOT EXISTS omnistream_db;
+USE omnistream_db;
+CREATE TABLE `Usuario` (
+  `id_usuario` int PRIMARY KEY,
+  `nickname` varchar(50) UNIQUE NOT NULL,
+  `email` varchar(100) UNIQUE NOT NULL,
+  `senha` varchar(255) NOT NULL,
+  `data_cadastro` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+);
+
+CREATE TABLE `Canal` (
+  `id_canal` int PRIMARY KEY,
+  `id_usuario` int UNIQUE NOT NULL,
+  `nome_canal` varchar(50) UNIQUE NOT NULL,
+  `descricao` varchar(500),
+  `data_criacao` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+);
+
+CREATE TABLE `Live` (
+  `id_live` int PRIMARY KEY,
+  `id_canal` int NOT NULL,
+  `titulo_live` varchar(100) NOT NULL,
+  `descricao` varchar(500),
+  `data_inicio` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+  `data_fim` timestamp,
+  `status` varchar(20) NOT NULL
+);
+
+CREATE TABLE `Categoria` (
+  `id_categoria` int PRIMARY KEY,
+  `titulo` varchar(50) UNIQUE NOT NULL,
+  `descricao` varchar(200)
+);
+
+CREATE TABLE `Live_Categoria` (
+  `id_live` int NOT NULL,
+  `id_categoria` int NOT NULL,
+  PRIMARY KEY (`id_live`, `id_categoria`)
+);
+
+CREATE TABLE `API_Externa` (
+  `id_api` int PRIMARY KEY,
+  `id_usuario` int NOT NULL,
+  `nome_servico` varchar(100) NOT NULL,
+  `chave_api` varchar(255) NOT NULL,
+  `data_conexao` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+  `status` varchar(20) NOT NULL
+);
+
+CREATE TABLE `Conteudo_VOD` (
+  `id_conteudo` int PRIMARY KEY,
+  `id_api` int NOT NULL,
+  `titulo` varchar(200) NOT NULL,
+  `tipo` varchar(20) NOT NULL,
+  `ano` int,
+  `descricao` varchar(500)
+);
+
+CREATE TABLE `Historico_Visualizacao` (
+  `id_historico` int PRIMARY KEY,
+  `id_usuario` int NOT NULL,
+  `id_live` int,
+  `id_conteudo` int,
+  `data_visualizacao` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+  `progresso` int
+);
+
+CREATE TABLE `Inscricao` (
+  `id_usuario` int NOT NULL,
+  `id_canal` int NOT NULL,
+  `data_inscricao` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+  PRIMARY KEY (`id_usuario`, `id_canal`)
+);
+
+CREATE TABLE `Chat_mensagem` (
+  `id_chat` int PRIMARY KEY,
+  `id_usuario` int NOT NULL,
+  `id_live` int NOT NULL,
+  `data_mensagem` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+  `conteudo` varchar(200) NOT NULL
+);
+
+CREATE TABLE `Notificacao` (
+  `id_notificacao` int PRIMARY KEY,
+  `id_usuario` int NOT NULL,
+  `conteudo` varchar(200) NOT NULL,
+  `lida` boolean NOT NULL DEFAULT false,
+  `data_envio` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+);
+
+ALTER TABLE `Usuario` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Canal` (`id_usuario`);
+
+ALTER TABLE `Live` ADD FOREIGN KEY (`id_canal`) REFERENCES `Canal` (`id_canal`);
+
+ALTER TABLE `Live_Categoria` ADD FOREIGN KEY (`id_live`) REFERENCES `Live` (`id_live`);
+
+ALTER TABLE `Live_Categoria` ADD FOREIGN KEY (`id_categoria`) REFERENCES `Categoria` (`id_categoria`);
+
+ALTER TABLE `API_Externa` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
+
+ALTER TABLE `Conteudo_VOD` ADD FOREIGN KEY (`id_api`) REFERENCES `API_Externa` (`id_api`);
+
+ALTER TABLE `Historico_Visualizacao` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
+
+ALTER TABLE `Historico_Visualizacao` ADD FOREIGN KEY (`id_live`) REFERENCES `Live` (`id_live`);
+
+ALTER TABLE `Historico_Visualizacao` ADD FOREIGN KEY (`id_conteudo`) REFERENCES `Conteudo_VOD` (`id_conteudo`);
+
+ALTER TABLE `Inscricao` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
+
+ALTER TABLE `Inscricao` ADD FOREIGN KEY (`id_canal`) REFERENCES `Canal` (`id_canal`);
+
+ALTER TABLE `Chat_mensagem` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
+
+ALTER TABLE `Chat_mensagem` ADD FOREIGN KEY (`id_live`) REFERENCES `Live` (`id_live`);
+
+ALTER TABLE `Notificacao` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
