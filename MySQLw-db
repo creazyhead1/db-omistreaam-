@@ -1,5 +1,6 @@
 CREATE DATABASE IF NOT EXISTS omnistream_db;
 USE omnistream_db;
+
 CREATE TABLE `Usuario` (
   `id_usuario` int PRIMARY KEY,
   `nickname` varchar(50) UNIQUE NOT NULL,
@@ -88,30 +89,125 @@ CREATE TABLE `Notificacao` (
   `data_envio` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP)
 );
 
-ALTER TABLE `Usuario` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Canal` (`id_usuario`);
-
+-- Definição das Chaves Estrangeiras (Constraints)
+ALTER TABLE `Canal` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
 ALTER TABLE `Live` ADD FOREIGN KEY (`id_canal`) REFERENCES `Canal` (`id_canal`);
-
 ALTER TABLE `Live_Categoria` ADD FOREIGN KEY (`id_live`) REFERENCES `Live` (`id_live`);
-
 ALTER TABLE `Live_Categoria` ADD FOREIGN KEY (`id_categoria`) REFERENCES `Categoria` (`id_categoria`);
-
 ALTER TABLE `API_Externa` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
-
 ALTER TABLE `Conteudo_VOD` ADD FOREIGN KEY (`id_api`) REFERENCES `API_Externa` (`id_api`);
-
 ALTER TABLE `Historico_Visualizacao` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
-
 ALTER TABLE `Historico_Visualizacao` ADD FOREIGN KEY (`id_live`) REFERENCES `Live` (`id_live`);
-
 ALTER TABLE `Historico_Visualizacao` ADD FOREIGN KEY (`id_conteudo`) REFERENCES `Conteudo_VOD` (`id_conteudo`);
-
 ALTER TABLE `Inscricao` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
-
 ALTER TABLE `Inscricao` ADD FOREIGN KEY (`id_canal`) REFERENCES `Canal` (`id_canal`);
-
 ALTER TABLE `Chat_mensagem` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
-
 ALTER TABLE `Chat_mensagem` ADD FOREIGN KEY (`id_live`) REFERENCES `Live` (`id_live`);
-
 ALTER TABLE `Notificacao` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
+
+-- 1. Tabela: Usuario
+INSERT INTO `Usuario` (`id_usuario`, `nickname`, `email`, `senha`) VALUES
+(1, 'sergio_dev', 'sergio@omnistream.com', 'senha_hash_123'),
+(2, 'twitch_user', 'user@gmail.com', 'senha_segura_456');
+
+-- 2. Tabela: Canal
+INSERT INTO `Canal` (`id_canal`, `id_usuario`, `nome_canal`, `descricao`) VALUES
+(10, 1, 'Sergio Games', 'Canal focado em desenvolvimento e gameplays'),
+(20, 2, 'Cortes de Podcast', 'Melhores momentos da semana');
+
+-- 3. Tabela: Live
+INSERT INTO `Live` (`id_live`, `id_canal`, `titulo_live`, `descricao`, `status`) VALUES
+(100, 10, 'Criando um jogo com Pygame do zero!', 'Live de código ao vivo', 'Iniciada'),
+(200, 20, 'React do Podcast #15', 'Conversa com convidados', 'Encerrada');
+
+-- 4. Tabela: Categoria
+INSERT INTO `Categoria` (`id_categoria`, `titulo`, `descricao`) VALUES
+(1000, 'Software Development', 'Programação, engenharia e design de código'),
+(2000, 'Just Chatting', 'Conversas gerais com o chat');
+
+-- 5. Tabela: Live_Categoria
+INSERT INTO `Live_Categoria` (`id_live`, `id_categoria`) VALUES
+(100, 1000),
+(200, 2000);
+
+-- 6. Tabela: Inscricao
+INSERT INTO `Inscricao` (`id_usuario`, `id_canal`) VALUES
+(2, 10);
+
+-- 7. Tabela: Chat_mensagem
+INSERT INTO `Chat_mensagem` (`id_chat`, `id_usuario`, `id_live`, `conteudo`) VALUES
+(500, 2, 100, 'Caraca, esse projeto em Pygame está ficando muito massa!');
+
+-- 1. Tabela: Usuario (Listagem simples)
+SELECT * FROM `Usuario`;
+
+-- 2. Tabela: Canal (Busca o canal associando os dados do dono via JOIN)
+SELECT u.nickname, c.nome_canal, c.descricao 
+FROM `Usuario` u
+JOIN `Canal` c ON u.id_usuario = c.id_usuario;
+
+-- 3. Tabela: Live (Filtrando transmissões que estão ativas)
+SELECT titulo_live, status FROM `Live` WHERE status = 'Iniciada';
+
+-- 4. Tabela: Categoria (Listagem de tags existentes)
+SELECT * FROM `Categoria`;
+
+-- 5. Tabela: Live_Categoria (Verifica quais títulos pertencem a uma categoria específica)
+SELECT l.titulo_live, cat.titulo 
+FROM `Live` l
+JOIN `Live_Categoria` lc ON l.id_live = lc.id_live
+JOIN `Categoria` cat ON lc.id_categoria = cat.id_categoria
+WHERE cat.titulo = 'Software Development';
+
+-- 6. Tabela: Inscricao (Agrupamento e contagem de inscritos por canal)
+SELECT id_canal, COUNT(id_usuario) AS total_inscritos 
+FROM `Inscricao` 
+WHERE id_canal = 10;
+
+-- 7. Tabela: Chat_mensagem (Filtra mensagens de uma live com o nickname do remetente)
+SELECT m.data_mensagem, u.nickname, m.conteudo 
+FROM `Chat_mensagem` m
+JOIN `Usuario` u ON m.id_usuario = u.id_usuario
+WHERE m.id_live = 100;
+
+-- 1. Tabela: Usuario
+UPDATE `Usuario` SET `email` = 'sergio.augusto@omnistream.com' WHERE `id_usuario` = 1;
+
+-- 2. Tabela: Canal
+UPDATE `Canal` SET `descricao` = 'Desenvolvimento de jogos e Ciência da Computação.' WHERE `id_canal` = 10;
+
+-- 3. Tabela: Live
+UPDATE `Live` SET `status` = 'Encerrada', `data_fim` = CURRENT_TIMESTAMP WHERE `id_live` = 100;
+
+-- 4. Tabela: Categoria
+UPDATE `Categoria` SET `descricao` = 'Desenvolvimento de software, jogos e lives de TI.' WHERE `id_categoria` = 1000;
+
+-- 5. Tabela: Live_Categoria
+UPDATE `Live_Categoria` SET `id_categoria` = 1000 WHERE `id_live` = 200 AND `id_categoria` = 2000;
+
+-- 6. Tabela: Inscricao
+UPDATE `Inscricao` SET `data_inscricao` = CURRENT_TIMESTAMP WHERE `id_usuario` = 2 AND `id_canal` = 10;
+
+-- 7. Tabela: Chat_mensagem
+UPDATE `Chat_mensagem` SET `conteudo` = '[Mensagem apagada por violação das diretrizes]' WHERE `id_chat` = 500;
+
+-- 1. Tabela: Chat_mensagem
+DELETE FROM `Chat_mensagem` WHERE `id_chat` = 500;
+
+-- 2. Tabela: Inscricao
+DELETE FROM `Inscricao` WHERE `id_usuario` = 2 AND `id_canal` = 10;
+
+-- 3. Tabela: Live_Categoria
+DELETE FROM `Live_Categoria` WHERE `id_live` = 100 AND `id_categoria` = 1000;
+
+-- 4. Tabela: Categoria
+DELETE FROM `Categoria` WHERE `id_categoria` = 2000;
+
+-- 5. Tabela: Live
+DELETE FROM `Live` WHERE `id_live` = 200;
+
+-- 6. Tabela: Canal
+DELETE FROM `Canal` WHERE `id_canal` = 20;
+
+-- 7. Tabela: Usuario
+DELETE FROM `Usuario` WHERE `id_usuario` = 2;
