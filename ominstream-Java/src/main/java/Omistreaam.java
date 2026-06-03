@@ -5,7 +5,7 @@ public class Omistreaam {
 
     static Scanner sc = new Scanner(System.in);
 
-    public static void main(String args[]){
+    public static void main(String args[]) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/omnistream_db", "root", "root");
@@ -26,7 +26,7 @@ public class Omistreaam {
                 System.out.println();
                 entrada = lerIntObrigatorio("Digite a opção desejada");
 
-                switch (entrada){
+                switch (entrada) {
                     // Usuario ( INSERIR - ALTERAR - REMOVER - CONSULTA - LIVES ASSISTIDAS - PROCURAR - SAIR )
                     case 1:
                         do {
@@ -42,27 +42,39 @@ public class Omistreaam {
                             System.out.println();
                             opcao = lerIntObrigatorio("Digite a opção desejada");
 
-                            switch (opcao){
+                            switch (opcao) {
                                 case 1:
                                     // Inserir
-                                    String nickName = lerStringObrigatorio("Informe o nome de usuário que deseja cadastrar");
-                                    String email = lerStringObrigatorio("Informe o email");
-                                    String senha = lerStringObrigatorio("Informe o senha");
-                                    String sqlInsertUsuario = " INSERT INTO Usuario (nickname, email, senha) VALUES ('" + nickName + "', '" + email + "', '" + senha +"')";
-                                    stm.executeUpdate(sqlInsertUsuario);
+                                    try {
+                                        String nickName = lerStringObrigatorio("Informe o nome de usuário que deseja cadastrar");
+                                        String email = lerStringObrigatorio("Informe o email");
+                                        String senha = lerStringObrigatorio("Informe o senha");
+                                        String sqlInsertUsuario = " INSERT INTO Usuario (nickname, email, senha) VALUES ('" + nickName + "', '" + email + "', '" + senha + "')";
+                                        stm.executeUpdate(sqlInsertUsuario);
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao inserir usuário: " + e.getMessage());
+                                    }
                                     break;
                                 case 2:
                                     // Atualizar
-                                    String nickNameBusca = lerStringObrigatorio("Informe o nome do usuário");
-                                    String nickNameNovo = lerStringObrigatorio("Informe o novo nome usuário que deseja atualizar");
-                                    String sqlUpdateUsuario = " UPDATE Usuario set nickname = '" + nickNameNovo + "' where nickname = '" + nickNameBusca + "'";
-                                    sqlVerificador(stm.executeUpdate(sqlUpdateUsuario));
+                                    try {
+                                        String nickNameBusca = lerStringObrigatorio("Informe o nome do usuário");
+                                        String nickNameNovo = lerStringObrigatorio("Informe o novo nome usuário que deseja atualizar");
+                                        String sqlUpdateUsuario = " UPDATE Usuario set nickname = '" + nickNameNovo + "' where nickname = '" + nickNameBusca + "'";
+                                        sqlVerificador(stm.executeUpdate(sqlUpdateUsuario));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao atualizar usuário: " + e.getMessage());
+                                    }
                                     break;
                                 case 3:
                                     // Deletar
-                                    String nickNameDeletar = lerStringObrigatorio("Informe o nome de usuário que deseja remover");
-                                    String sqlDeletarUsuario = " DELETE FROM Usuario where nickname = '" + nickNameDeletar + "'";
-                                    sqlVerificador(stm.executeUpdate(sqlDeletarUsuario));
+                                    try {
+                                        String nickNameDeletar = lerStringObrigatorio("Informe o nome de usuário que deseja remover");
+                                        String sqlDeletarUsuario = " DELETE FROM Usuario where nickname = '" + nickNameDeletar + "'";
+                                        sqlVerificador(stm.executeUpdate(sqlDeletarUsuario));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao deletar usuário: " + e.getMessage());
+                                    }
                                     break;
                                 case 4:
                                     // Buscar todos
@@ -118,27 +130,39 @@ public class Omistreaam {
                             System.out.println();
                             opcao = lerIntObrigatorio("Digite a opção desejada");
 
-                            switch (opcao){
+                            switch (opcao) {
                                 case 1:
                                     // Inserir
-                                    String nomeCanal = lerStringObrigatorio("Informe o nome do canal");
-                                    int usuarioId = lerIntObrigatorio("Informe o id do usuário do canal");
-                                    String descricao = lerStringObrigatorio("Informe a descrição do canal");
-                                    String sqlInsertUsuario = " INSERT INTO Canal (nome_canal, id_usuario, descricao) VALUES ('" + nomeCanal + "', '" + usuarioId + "', '" + descricao +"')";
-                                    stm.executeUpdate(sqlInsertUsuario);
+                                    try {
+                                        String nomeCanal = lerStringObrigatorio("Informe o nome do canal");
+                                        int usuarioId = lerIntObrigatorio("Informe o id do usuário do canal");
+                                        String descricao = lerStringObrigatorio("Informe a descrição do canal");
+                                        String sqlInsertUsuario = " INSERT INTO Canal (nome_canal, id_usuario, descricao) VALUES ('" + nomeCanal + "', '" + usuarioId + "', '" + descricao + "')";
+                                        stm.executeUpdate(sqlInsertUsuario);
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao inserir canal: " + e.getMessage());
+                                    }
                                     break;
                                 case 2:
                                     // Atualizar
-                                    String nomeCanalBusca = lerStringObrigatorio("Informe o nome do canal");
-                                    String nomeCanalNovo = lerStringObrigatorio("Informe o novo nome do canal que deseja atualizar");
-                                    String sqlUpdateUsuario = " UPDATE Canal set nome_canal = '" + nomeCanalNovo + "' where nome_canal = '" + nomeCanalBusca + "'";
-                                    sqlVerificador(stm.executeUpdate(sqlUpdateUsuario));
+                                    try {
+                                        String nomeCanalBusca = lerStringObrigatorio("Informe o nome do canal");
+                                        String nomeCanalNovo = lerStringObrigatorio("Informe o novo nome do canal que deseja atualizar");
+                                        String sqlUpdateUsuario = " UPDATE Canal set nome_canal = '" + nomeCanalNovo + "' where nome_canal = '" + nomeCanalBusca + "'";
+                                        sqlVerificador(stm.executeUpdate(sqlUpdateUsuario));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao atualizar canal: " + e.getMessage());
+                                    }
                                     break;
                                 case 3:
                                     // Deletar
-                                    String nomeCanalDeletar = lerStringObrigatorio("Informe o nome de canal que deseja remover");
-                                    String sqlDeletarUsuario = " DELETE FROM Canal where nome_canal = '" + nomeCanalDeletar + "'";
-                                    sqlVerificador(stm.executeUpdate(sqlDeletarUsuario));
+                                    try {
+                                        String nomeCanalDeletar = lerStringObrigatorio("Informe o nome de canal que deseja remover");
+                                        String sqlDeletarUsuario = " DELETE FROM Canal where nome_canal = '" + nomeCanalDeletar + "'";
+                                        sqlVerificador(stm.executeUpdate(sqlDeletarUsuario));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao deletar canal: " + e.getMessage());
+                                    }
                                     break;
                                 case 4:
                                     // Buscar todos
@@ -153,7 +177,7 @@ public class Omistreaam {
                                     break;
                                 case 5:
                                     // Buscar todos
-                                    int idCanal4 =lerIntObrigatorio("Informe um id de canal que deseja ver a quantidade de inscritos");
+                                    int idCanal4 = lerIntObrigatorio("Informe um id de canal que deseja ver a quantidade de inscritos");
                                     String sqlBuscarQuantidade = " SELECT COUNT(*) FROM Inscricao WHERE id_canal = " + idCanal4;
                                     ResultSet rs1 = stm.executeQuery(sqlBuscarQuantidade);
                                     sqlVerificador(rs1);
@@ -195,28 +219,42 @@ public class Omistreaam {
                             System.out.println();
                             opcao = lerIntObrigatorio("Digite a opção desejada");
 
-                            switch (opcao){
+                            switch (opcao) {
                                 case 1:
                                     // Inserir
-                                    int idCanalLive =lerIntObrigatorio("Informe o id do canal");
-                                    String tituloLive = lerStringObrigatorio("Informe o título da live");
-                                    String descricaoLive = lerStringObrigatorio("Informe a descrição da live");
-                                    String statusLive = lerStringObrigatorio("Informe o status da live");
-                                    String sqlInsertLive = " INSERT INTO Live (id_canal, titulo_live, descricao, status) VALUES (" + idCanalLive + ", '" + tituloLive + "', '" + descricaoLive + "', '" + statusLive + "')";
-                                    stm.executeUpdate(sqlInsertLive);
+                                    try {
+                                        int idCanalLive = lerIntObrigatorio("Informe o id do canal");
+                                        String tituloLive = lerStringObrigatorio("Informe o título da live");
+                                        String descricaoLive = lerStringObrigatorio("Informe a descrição da live");
+                                        String statusLive = lerStringObrigatorio("Informe o status da live");
+                                        String sqlInsertLive = " INSERT INTO Live (id_canal, titulo_live, descricao, status) VALUES (" + idCanalLive + ", '" + tituloLive + "', '" + descricaoLive + "', '" + statusLive + "')";
+                                        stm.executeUpdate(sqlInsertLive);
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao inserir live: " + e.getMessage());
+                                    }
                                     break;
                                 case 2:
                                     // Atualizar
-                                    String tituloLiveNovo = lerStringObrigatorio("Informe o titulo da live");
-                                    String tituloLiveAtualizar = lerStringObrigatorio("Informe o novo título da live que deseja atualizar");
-                                    String sqlUpdateLive = " UPDATE Live set titulo_live = '" + tituloLiveAtualizar + "' where titulo_live = '" + tituloLiveNovo + "'";
-                                    sqlVerificador(stm.executeUpdate(sqlUpdateLive));
+                                    try {
+                                        String tituloLiveNovo = lerStringObrigatorio("Informe o titulo da live deseja atualizar");
+                                        String tituloLiveAtualizar = lerStringObrigatorio("Informe o novo título da live");
+                                        String descricaoLiveAtualizar = lerStringObrigatorio("Informe o nova descrição da live ");
+                                        String statusLiveAtualizar = lerStringObrigatorio("Informe o novo status da live");
+                                        String sqlUpdateLive = " UPDATE Live set titulo_live = '" + tituloLiveAtualizar + "', " + "descricao = '" + descricaoLiveAtualizar + "', status = '" + statusLiveAtualizar + "' " + "where titulo_live = '" + tituloLiveNovo + "'";
+                                        sqlVerificador(stm.executeUpdate(sqlUpdateLive));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao atualizar live: " + e.getMessage());
+                                    }
                                     break;
                                 case 3:
                                     // Deletar
-                                    String tituloLiveDeletar = lerStringObrigatorio("Informe o titulo da live que deseja remover");
-                                    String sqlDeletarLive = " DELETE FROM Live where titulo_live = '" + tituloLiveDeletar + "'";
-                                    sqlVerificador(stm.executeUpdate(sqlDeletarLive));
+                                    try {
+                                        String tituloLiveDeletar = lerStringObrigatorio("Informe o titulo da live que deseja remover");
+                                        String sqlDeletarLive = " DELETE FROM Live where titulo_live = '" + tituloLiveDeletar + "'";
+                                        sqlVerificador(stm.executeUpdate(sqlDeletarLive));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao deletar live: " + e.getMessage());
+                                    }
                                     break;
                                 case 4:
                                     // Buscar todos
@@ -231,19 +269,19 @@ public class Omistreaam {
                                     break;
                                 case 5:
                                     // Buscar a quantidade de views em uma live
-                                    int idLive =lerIntObrigatorio("Informe algum id de live que deseja ver a quantidade de views");
+                                    int idLive = lerIntObrigatorio("Informe algum id de live que deseja ver a quantidade de views");
                                     String SqlConsultaLive1 = " SELECT l.titulo_live, COUNT(h.id_usuario) AS views FROM Historico_Visualizacao h JOIN Live l ON l.id_live = h.id_live WHERE h.id_live = " + idLive + " GROUP BY l.titulo_live";
                                     ResultSet rs2 = stm.executeQuery(SqlConsultaLive1);
                                     sqlVerificador(rs2);
                                     while (rs2.next()) {
-                                        String tituloLives = rs2.getString("l.titulo_live");
+                                        String tituloLives = rs2.getString("titulo_live");
                                         String views = rs2.getString("views");
-                                        System.out.println("Título: " + tituloLives + " views: " +  views);
+                                        System.out.println("Título: " + tituloLives + " views: " + views);
                                     }
                                     break;
                                 case 6:
                                     // Buscar a quantidade de views em uma live
-                                    int idLive1 =lerIntObrigatorio("Informe algum id de live que deseja ver os viewers");
+                                    int idLive1 = lerIntObrigatorio("Informe algum id de live que deseja ver os viewers");
                                     String SqlConsultaLive2 = " SELECT u.nickname FROM Historico_Visualizacao h JOIN Usuario u ON u.id_usuario = h.id_usuario WHERE h.id_live = " + idLive1;
                                     ResultSet rs3 = stm.executeQuery(SqlConsultaLive2);
                                     sqlVerificador(rs3);
@@ -283,26 +321,39 @@ public class Omistreaam {
                             System.out.println();
                             opcao = lerIntObrigatorio("Digite a opção desejada");
 
-                            switch (opcao){
+                            switch (opcao) {
                                 case 1:
                                     // Inserir
-                                    String tituloCategoria = lerStringObrigatorio("Informe o título da categoria");
-                                    String descricaoCategoria = lerStringObrigatorio("Informe a descrição da categoria");
-                                    String sqlInsertCategoria = " INSERT INTO Categoria (titulo, descricao) VALUES ('" + tituloCategoria + "', '" + descricaoCategoria + "')";
-                                    stm.executeUpdate(sqlInsertCategoria);
+                                    try {
+                                        String tituloCategoria = lerStringObrigatorio("Informe o título da categoria");
+                                        String descricaoCategoria = lerStringObrigatorio("Informe a descrição da categoria");
+                                        String sqlInsertCategoria = " INSERT INTO Categoria (titulo, descricao) VALUES ('" + tituloCategoria + "', '" + descricaoCategoria + "')";
+                                        stm.executeUpdate(sqlInsertCategoria);
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao inserir categoria: " + e.getMessage());
+                                    }
                                     break;
                                 case 2:
                                     // Atualizar
-                                    String tituloCategoriaAtualizar = lerStringObrigatorio("Informe o titulo da categoria");
-                                    String tituloCategoriaNovoAtualizar = lerStringObrigatorio("Informe o novo título da categoria que deseja atualizar");
-                                    String sqlUpdateCategoria = " UPDATE Categoria set titulo = '" + tituloCategoriaNovoAtualizar + "' where titulo = '" + tituloCategoriaAtualizar + "'";
-                                    sqlVerificador(stm.executeUpdate(sqlUpdateCategoria));
+                                    try {
+                                        String tituloCategoriaAtualizar = lerStringObrigatorio("Informe o titulo da categoria que deseja atualizar");
+                                        String tituloNovo = lerStringObrigatorio("Informe o novo título da categoria");
+                                        String descricaoNova = lerStringObrigatorio("Informe a nova descrição da categoria");
+                                        String sqlUpdateCategoria = " UPDATE Categoria set titulo = '" + tituloNovo + "', descricao = '" + descricaoNova + "' where titulo = '" + tituloCategoriaAtualizar + "'";
+                                        sqlVerificador(stm.executeUpdate(sqlUpdateCategoria));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao atualizar categoria: " + e.getMessage());
+                                    }
                                     break;
                                 case 3:
                                     // Deletar
-                                    String tituloCategoriaDeletar = lerStringObrigatorio("Informe o tiutlo da categoria que deseja remover");
-                                    String sqlDeletarCategoria = " DELETE FROM Categoria where titulo = '" + tituloCategoriaDeletar + "'";
-                                    sqlVerificador(stm.executeUpdate(sqlDeletarCategoria));
+                                    try {
+                                        String tituloCategoriaDeletar = lerStringObrigatorio("Informe o titulo da categoria que deseja remover");
+                                        String sqlDeletarCategoria = " DELETE FROM Categoria where titulo = '" + tituloCategoriaDeletar + "'";
+                                        sqlVerificador(stm.executeUpdate(sqlDeletarCategoria));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao deletar categoria: " + e.getMessage());
+                                    }
                                     break;
                                 case 4:
                                     // Buscar todos
@@ -344,20 +395,28 @@ public class Omistreaam {
                             System.out.println();
                             opcao = lerIntObrigatorio("Digite a opção desejada");
 
-                            switch (opcao){
+                            switch (opcao) {
                                 case 1:
                                     // Inserir
-                                    int idUsuarioInscricao = lerIntObrigatorio("Informe o id do usuário");
-                                    int idCanalInscricao = lerIntObrigatorio("Informe o id do canal");
-                                    String sqlInsertInscricao = " INSERT INTO Inscricao (id_usuario, id_canal) VALUES (" + idUsuarioInscricao + ", " + idCanalInscricao + ")";
-                                    stm.executeUpdate(sqlInsertInscricao);
+                                    try {
+                                        int idUsuarioInscricao = lerIntObrigatorio("Informe o id do usuário");
+                                        int idCanalInscricao = lerIntObrigatorio("Informe o id do canal");
+                                        String sqlInsertInscricao = " INSERT INTO Inscricao (id_usuario, id_canal) VALUES (" + idUsuarioInscricao + ", " + idCanalInscricao + ")";
+                                        stm.executeUpdate(sqlInsertInscricao);
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao inserir inscrição: " + e.getMessage());
+                                    }
                                     break;
                                 case 2:
                                     // Deletar
-                                    int idUsuarioInscricaoDeletar = lerIntObrigatorio("Informe o id do usuário que deseja remover a inscrição");
-                                    int idCanalInscricaoDeletar = lerIntObrigatorio("Informe o id do canal que deseja remover a inscrição");
-                                    String sqlDeletarInscricao = " DELETE FROM Inscricao where id_usuario = " + idUsuarioInscricaoDeletar + " and id_canal = " + idCanalInscricaoDeletar;
-                                    sqlVerificador(stm.executeUpdate(sqlDeletarInscricao));
+                                    try {
+                                        int idUsuarioInscricaoDeletar = lerIntObrigatorio("Informe o id do usuário que deseja remover a inscrição");
+                                        int idCanalInscricaoDeletar = lerIntObrigatorio("Informe o id do canal que deseja remover a inscrição");
+                                        String sqlDeletarInscricao = " DELETE FROM Inscricao where id_usuario = " + idUsuarioInscricaoDeletar + " and id_canal = " + idCanalInscricaoDeletar;
+                                        sqlVerificador(stm.executeUpdate(sqlDeletarInscricao));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao deletar inscrição: " + e.getMessage());
+                                    }
                                     break;
                                 case 3:
                                     // Buscar todos
@@ -401,27 +460,39 @@ public class Omistreaam {
                             System.out.println();
                             opcao = lerIntObrigatorio("Digite a opção desejada");
 
-                            switch (opcao){
+                            switch (opcao) {
                                 case 1:
                                     // Inserir
-                                    int idUsuarioChat = lerIntObrigatorio("Informe o id do usuário");
-                                    int idLiveChat =lerIntObrigatorio("Informe o id da live");
-                                    String conteudoChat = lerStringObrigatorio("Informe o conteúdo da mensagem");
-                                    String sqlInsertChat = " INSERT INTO Chat_Mensagem (id_usuario, id_live, conteudo) VALUES (" + idUsuarioChat + ", " + idLiveChat + ", '" + conteudoChat + "')";
-                                    stm.executeUpdate(sqlInsertChat);
+                                    try {
+                                        int idUsuarioChat = lerIntObrigatorio("Informe o id do usuário");
+                                        int idLiveChat = lerIntObrigatorio("Informe o id da live");
+                                        String conteudoChat = lerStringObrigatorio("Informe o conteúdo da mensagem");
+                                        String sqlInsertChat = " INSERT INTO Chat_Mensagem (id_usuario, id_live, conteudo) VALUES (" + idUsuarioChat + ", " + idLiveChat + ", '" + conteudoChat + "')";
+                                        stm.executeUpdate(sqlInsertChat);
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao inserir mensagem de chat: " + e.getMessage());
+                                    }
                                     break;
                                 case 2:
                                     // Atualizar
-                                    int idChatAtualizar =lerIntObrigatorio("Informe o id do chat");
-                                    String conteudoChatNovo = lerStringObrigatorio("Informe o novo conteúdo da mensagem que deseja atualizar");
-                                    String sqlUpdateChat = " UPDATE Chat_Mensagem set conteudo = '" + conteudoChatNovo + "' where id_chat = " + idChatAtualizar;
-                                    sqlVerificador(stm.executeUpdate(sqlUpdateChat));
+                                    try {
+                                        int idChatAtualizar = lerIntObrigatorio("Informe o id do chat");
+                                        String conteudoChatNovo = lerStringObrigatorio("Informe o novo conteúdo da mensagem que deseja atualizar");
+                                        String sqlUpdateChat = " UPDATE Chat_Mensagem set conteudo = '" + conteudoChatNovo + "' where id_chat = " + idChatAtualizar;
+                                        sqlVerificador(stm.executeUpdate(sqlUpdateChat));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao atualizar mensagem de chat: " + e.getMessage());
+                                    }
                                     break;
                                 case 3:
                                     // Deletar
-                                    int idChatDeletar =lerIntObrigatorio("Informe o id do chat que deseja remover");
-                                    String sqlDeletarChat = " DELETE FROM Chat_Mensagem where id_chat = " + idChatDeletar;
-                                    sqlVerificador(stm.executeUpdate(sqlDeletarChat));
+                                    try {
+                                        int idChatDeletar = lerIntObrigatorio("Informe o id do chat que deseja remover");
+                                        String sqlDeletarChat = " DELETE FROM Chat_Mensagem where id_chat = " + idChatDeletar;
+                                        sqlVerificador(stm.executeUpdate(sqlDeletarChat));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao deletar mensagem de chat: " + e.getMessage());
+                                    }
                                     break;
                                 case 4:
                                     // Buscar todos
@@ -479,26 +550,38 @@ public class Omistreaam {
                             System.out.println();
                             opcao = lerIntObrigatorio("Digite a opção desejada");
 
-                            switch (opcao){
+                            switch (opcao) {
                                 case 1:
                                     // Inserir
-                                    int idUsuarioNotificacao = lerIntObrigatorio("Informe o id do usuário");
-                                    String conteudoNotificacao = lerStringObrigatorio("Informe o conteúdo da notificação");
-                                    String sqlInsertNotificacao = " INSERT INTO Notificacao (id_usuario, conteudo) VALUES (" + idUsuarioNotificacao + ", '" + conteudoNotificacao + "')";
-                                    stm.executeUpdate(sqlInsertNotificacao);
+                                    try {
+                                        int idUsuarioNotificacao = lerIntObrigatorio("Informe o id do usuário");
+                                        String conteudoNotificacao = lerStringObrigatorio("Informe o conteúdo da notificação");
+                                        String sqlInsertNotificacao = " INSERT INTO Notificacao (id_usuario, conteudo) VALUES (" + idUsuarioNotificacao + ", '" + conteudoNotificacao + "')";
+                                        stm.executeUpdate(sqlInsertNotificacao);
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao inserir notificação: " + e.getMessage());
+                                    }
                                     break;
                                 case 2:
                                     // Atualizar
-                                    int idNotificacaoAtualizar = lerIntObrigatorio("Informe o id da notificação");
-                                    String conteudoNotificacaoNovo = lerStringObrigatorio("Informe o novo conteúdo da notificação que deseja atualizar");
-                                    String sqlUpdateNotificacao = " UPDATE Notificacao set conteudo = '" + conteudoNotificacaoNovo + "' where id_notificacao = " + idNotificacaoAtualizar;
-                                    sqlVerificador(stm.executeUpdate(sqlUpdateNotificacao));
+                                    try {
+                                        int idNotificacaoAtualizar = lerIntObrigatorio("Informe o id da notificação");
+                                        String conteudoNotificacaoNovo = lerStringObrigatorio("Informe o novo conteúdo da notificação que deseja atualizar");
+                                        String sqlUpdateNotificacao = " UPDATE Notificacao set conteudo = '" + conteudoNotificacaoNovo + "' where id_notificacao = " + idNotificacaoAtualizar;
+                                        sqlVerificador(stm.executeUpdate(sqlUpdateNotificacao));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao atualizar notificação: " + e.getMessage());
+                                    }
                                     break;
                                 case 3:
                                     // Deletar
-                                    int idNotificacaoDeletar = lerIntObrigatorio("Informe o id da notificação que deseja remover");
-                                    String sqlDeletarNotificacao = " DELETE FROM Notificacao where id_notificacao = " + idNotificacaoDeletar;
-                                    sqlVerificador(stm.executeUpdate(sqlDeletarNotificacao));
+                                    try {
+                                        int idNotificacaoDeletar = lerIntObrigatorio("Informe o id da notificação que deseja remover");
+                                        String sqlDeletarNotificacao = " DELETE FROM Notificacao where id_notificacao = " + idNotificacaoDeletar;
+                                        sqlVerificador(stm.executeUpdate(sqlDeletarNotificacao));
+                                    } catch (SQLException e) {
+                                        System.out.println("Erro ao deletar notificação: " + e.getMessage());
+                                    }
                                     break;
                                 case 4:
                                     // Buscar todos
@@ -542,52 +625,49 @@ public class Omistreaam {
                         break;
                 }
             } while (entrada != 8);
-        }
-        catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
     }
 
-    public static void sqlVerificador(Integer linhas){
-        if (linhas == 0){
+    public static void sqlVerificador(Integer linhas) {
+        if (linhas == 0) {
             System.out.println("Registro não encontrado");
-        }
-        else {
+        } else {
             System.out.println("Operação realizada com sucesso");
         }
     }
 
     public static void sqlVerificador(ResultSet rs) throws SQLException {
-        if (!rs.isBeforeFirst()){
+        if (!rs.isBeforeFirst()) {
             System.out.println("Erro conteúdo não encontrado");
         }
     }
 
 
-    public static String lerStringObrigatorio(String mensagem){
+    public static String lerStringObrigatorio(String mensagem) {
         String valor = "";
-        while (valor == null || valor.trim().isEmpty()){
+        while (valor == null || valor.trim().isEmpty()) {
             System.out.println(mensagem + ": ");
             valor = sc.nextLine();
-            if (valor.trim().isEmpty()){
+            if (valor.trim().isEmpty()) {
                 System.out.println("Campo Obrigatório! Preencha o campo");
             }
         }
         return valor.trim();
     }
 
-    public static Integer lerIntObrigatorio(String mensagem){
-        while (true){
+    public static Integer lerIntObrigatorio(String mensagem) {
+        while (true) {
             System.out.println(mensagem + ": ");
             try {
                 return Integer.parseInt(sc.nextLine());
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 System.out.println("Insira um valor válido");
             }
-            }
         }
+    }
 }
