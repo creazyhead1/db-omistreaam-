@@ -22,7 +22,7 @@ O modelo de dados foi projetado para suportar o fluxo em tempo real de uma plata
 * **Transmissões e Conteúdo:** Controle de transmissões ao vivo (`Live`), categorias e tags (`Categoria`, `Live_Categoria`) e integração com catálogos externos de VOD (`Conteudo_VOD`).
 * **Interação em Tempo Real:** Histórico de visualização dinâmico (`Historico_Visualizacao`), sistema de chat para as transmissões (`Chat_mensagem`) e disparos de alertas (`Notificacao`).
 
-![Diagrama de Entidade-Relacionamento](Untitled.png)
+![Diagrama de Entidade-Relacionamento](DER_OmniStream.jpeg)
 
 ---
 
