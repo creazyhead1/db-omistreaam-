@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS omnistream_db;
 USE omnistream_db;
 
 -- ========================
--- CRIAÇÃO DAS TABELAS
+-- CREATEs
 -- ========================
 
 CREATE TABLE `Usuario` (
@@ -44,6 +44,12 @@ CREATE TABLE `Live_Categoria` (
   PRIMARY KEY (`id_live`, `id_categoria`)
 ) ENGINE=InnoDB;
 
+CREATE TABLE `Genero` (
+  `id_genero` int PRIMARY KEY AUTO_INCREMENT,
+  `titulo`    varchar(50) UNIQUE NOT NULL,
+  `descricao` varchar(200)
+) ENGINE=InnoDB;
+
 CREATE TABLE `API_Externa` (
   `id_api` int PRIMARY KEY AUTO_INCREMENT,
   `id_usuario` int NOT NULL,
@@ -55,11 +61,12 @@ CREATE TABLE `API_Externa` (
 
 CREATE TABLE `Conteudo_VOD` (
   `id_conteudo` int PRIMARY KEY AUTO_INCREMENT,
-  `id_api` int NOT NULL,
-  `titulo` varchar(200) NOT NULL,
-  `tipo` varchar(20) NOT NULL,
-  `ano` int,
-  `descricao` varchar(500)
+  `id_api`      int,
+  `id_genero`   int,
+  `titulo`      varchar(200) NOT NULL,
+  `tipo`        varchar(20) NOT NULL,
+  `ano`         int,
+  `descricao`   varchar(500)
 ) ENGINE=InnoDB;
 
 CREATE TABLE `Historico_Visualizacao` (
@@ -94,13 +101,13 @@ CREATE TABLE `Notificacao` (
   `data_envio` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- Restrições de Chave Estrangeira
 ALTER TABLE `Canal` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
 ALTER TABLE `Live` ADD FOREIGN KEY (`id_canal`) REFERENCES `Canal` (`id_canal`);
 ALTER TABLE `Live_Categoria` ADD FOREIGN KEY (`id_live`) REFERENCES `Live` (`id_live`);
 ALTER TABLE `Live_Categoria` ADD FOREIGN KEY (`id_categoria`) REFERENCES `Categoria` (`id_categoria`);
 ALTER TABLE `API_Externa` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
 ALTER TABLE `Conteudo_VOD` ADD FOREIGN KEY (`id_api`) REFERENCES `API_Externa` (`id_api`);
+ALTER TABLE `Conteudo_VOD` ADD FOREIGN KEY (`id_genero`) REFERENCES `Genero` (`id_genero`);
 ALTER TABLE `Historico_Visualizacao` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
 ALTER TABLE `Historico_Visualizacao` ADD FOREIGN KEY (`id_live`) REFERENCES `Live` (`id_live`);
 ALTER TABLE `Historico_Visualizacao` ADD FOREIGN KEY (`id_conteudo`) REFERENCES `Conteudo_VOD` (`id_conteudo`);
@@ -109,9 +116,8 @@ ALTER TABLE `Inscricao` ADD FOREIGN KEY (`id_canal`) REFERENCES `Canal` (`id_can
 ALTER TABLE `Chat_mensagem` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
 ALTER TABLE `Chat_mensagem` ADD FOREIGN KEY (`id_live`) REFERENCES `Live` (`id_live`);
 ALTER TABLE `Notificacao` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`);
-
 -- ========================
--- INSERÇÃO DE DADOS (DML)
+-- INSERTs
 -- ========================
 
 INSERT INTO `Usuario` (`nickname`, `email`, `senha`) VALUES
@@ -129,6 +135,13 @@ INSERT INTO `Categoria` (`titulo`) VALUES
 ('Programação'),
 ('Variety');
 
+INSERT INTO `Genero` (`titulo`) VALUES
+('Ação'),
+('Terror'),
+('Ficção Científica'),
+('Infantil'),
+('Documentário');
+
 INSERT INTO `Live` (`id_canal`, `titulo_live`, `descricao`, `status`) VALUES
 (1, 'Jogando Minecraft ao vivo!', 'Survival com os inscritos', 'encerrada'),
 (2, 'Variety Friday', 'Jogos variados toda sexta', 'encerrada'),
@@ -144,10 +157,11 @@ INSERT INTO `API_Externa` (`id_usuario`, `nome_servico`, `chave_api`, `status`) 
 (1, 'Jellyfin', 'jf_abc123xyz456', 'ativa'),
 (2, 'Plex', 'plx_def789uvw012', 'ativa');
 
-INSERT INTO `Conteudo_VOD` (`id_api`, `titulo`, `tipo`, `ano`) VALUES
-(1, 'Interestelar', 'filme', 2014),
-(1, 'Breaking Bad', 'serie', 2008),
-(2, 'Duna', 'filme', 2021);
+INSERT INTO `Conteudo_VOD` (`id_api`, `id_genero`, `titulo`, `tipo`, `ano`) VALUES
+(1, 3, 'Interestelar', 'filme', 2014),
+(1, NULL, 'Breaking Bad', 'serie', 2008),
+(2, 3, 'Duna', 'filme', 2021),
+(NULL, 4, 'Moana', 'filme', 2016);
 
 INSERT INTO `Historico_Visualizacao` (`id_usuario`, `id_live`, `id_conteudo`, `progresso`) VALUES
 (1, 1, NULL, NULL),
@@ -159,10 +173,10 @@ INSERT INTO `Inscricao` (`id_usuario`, `id_canal`) VALUES
 (1, 3),
 (2, 1);
 
-INSERT INTO `Chat_mensagem` (`id_chat`, `id_usuario`, `id_live`, `conteudo`) VALUES
-(1, 2, 1, 'Que resenha!'),
-(2, 3, 1, 'Pinadeira demais.'),
-(3, 1, 3, 'Não sabe buildar deck award');
+INSERT INTO `Chat_mensagem` (`id_usuario`, `id_live`, `conteudo`) VALUES
+(2, 1, 'Que resenha!'),
+(3, 1, 'Pinadeira demais.'),
+(1, 3, 'Não sabe buildar deck award');
 
 INSERT INTO `Notificacao` (`id_usuario`, `conteudo`, `lida`) VALUES
 (1, 'MariaPlays começou uma live!', false),
@@ -170,7 +184,7 @@ INSERT INTO `Notificacao` (`id_usuario`, `conteudo`, `lida`) VALUES
 (2, 'JoaoGamerTV começou uma live!', false);
 
 -- ========================
--- ATUALIZAÇÕES E EXCLUSÕES
+-- UPDATEs
 -- ========================
 
 -- Marcar todas as notificações de joaogamer como lidas
@@ -183,6 +197,10 @@ UPDATE `Live`
 SET `status` = 'encerrada', `data_fim` = CURRENT_TIMESTAMP
 WHERE `id_live` = 3;
 
+-- ========================
+-- DELETEs
+-- ========================
+
 -- Deletar uma mensagem do chat
 DELETE FROM `Chat_mensagem`
 WHERE `id_chat` = 1;
@@ -192,7 +210,7 @@ DELETE FROM `Inscricao`
 WHERE `id_usuario` = 1 AND `id_canal` = 2;
 
 -- ========================
--- CONSULTAS (SELECTs)
+-- SELECTs
 -- ========================
 
 -- Todos os usuários e seus canais
@@ -200,7 +218,7 @@ SELECT u.nickname, c.nome_canal, c.descricao
 FROM Usuario u
 JOIN Canal c ON c.id_usuario = u.id_usuario;
 
--- Notificações de joaogamer após o UPDATE
+-- Notificações de joaogamer após o UPDATE (devem aparecer como lidas)
 SELECT u.nickname, n.conteudo, n.lida, n.data_envio
 FROM Notificacao n
 JOIN Usuario u ON u.id_usuario = n.id_usuario
@@ -220,10 +238,9 @@ GROUP BY c.id_canal, c.nome_canal
 ORDER BY total_inscritos DESC;
 
 -- ========================
--- COMPONENTES AVANÇADOS
+-- STORED PROCEDURE
 -- ========================
 
--- 1. STORED PROCEDURE
 DELIMITER $$
 
 CREATE PROCEDURE BuscarHistorico(IN p_nickname VARCHAR(50))
@@ -244,10 +261,13 @@ END$$
 DELIMITER ;
 
 -- Teste do Stored Procedure
+
 CALL BuscarHistorico('joaogamer');
 
+-- ========================
+-- VIEW
+-- ========================
 
--- 2. VIEW
 CREATE VIEW Resumo_Canal AS
 SELECT
   c.nome_canal,
@@ -266,11 +286,14 @@ JOIN Usuario u ON u.id_usuario = c.id_usuario
 LEFT JOIN Inscricao i ON i.id_canal = c.id_canal
 GROUP BY c.id_canal, c.nome_canal, u.nickname;
 
--- Teste da View
+-- Teste do View
+
 SELECT * FROM Resumo_Canal;
 
+-- ========================
+-- TRIGGER
+-- ========================
 
--- 3. TRIGGER
 DELIMITER $$
 
 CREATE TRIGGER NotificarInscritos
@@ -292,5 +315,4 @@ DELIMITER ;
 INSERT INTO `Live` (`id_canal`, `titulo_live`, `descricao`, `status`)
 VALUES (1, 'Live de teste do trigger', 'Testando o trigger', 'ativa');
 
--- Verificando se a notificação foi gerada pelo Trigger
 SELECT * FROM Notificacao;
