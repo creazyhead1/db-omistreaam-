@@ -52,11 +52,35 @@ def comados_MySQL_Creat_insert(connection):
     try:
         cursor.execute(f"DESCRIBE {tabelas}")
         colunas_completas = cursor.fetchall()
-        colunas = [col[0] for col in colunas_completas if col[0] != 'id']
+        colunas = []
+        for col in colunas_completas:
+            nome_coluna = col[0]
+            extra = col[5].lower()
+            default_val = col[4]
+            
+            if 'auto_increment' in extra:
+                continue
+                
+            if default_val and 'current_timestamp' in str(default_val).lower():
+                continue
+                
+            colunas.append(nome_coluna)
         valores = []
         for coluna in colunas:
-            dado = input(f"Digite o valor para {coluna}: ")
-            valores.append(dado)
+            info_coluna = [c for c in colunas_completas if c[0] == coluna][0]
+            aceita_nulo = info_coluna[2] == 'YES'
+            
+            mensagem = f"Digite o valor para {coluna}"
+            if aceita_nulo:
+                mensagem += " (ou pressione Enter para nulo)"
+            mensagem += ": "
+            
+            dado = input(mensagem).strip()
+            
+            if dado == "" and aceita_nulo:
+                valores.append(None)
+            else:
+                valores.append(dado)
         lista_de_colunas = ", ".join(colunas)
         marcadores = ", ".join(["%s"] * len(valores))
         comando_sql = f"INSERT INTO {tabelas} ({lista_de_colunas}) VALUES ({marcadores})"
@@ -97,9 +121,16 @@ def comandos_MySQL_UPDATE_editar(connection):
         cursor.execute(f"DESCRIBE {tabela}")
         colunas_completas = cursor.fetchall()
         coluna_id = [col[0] for col in colunas_completas if col[3] == 'PRI'][0]
-        colunas = [
-            col[0] for col in colunas_completas 
-            if col[3] != 'PRI' and 'data' not in col[0]]
+        colunas = []
+        for col in colunas_completas:
+            nome_coluna = col[0]
+            is_pri = col[3] == 'PRI'
+            default_val = col[4]
+            if is_pri:
+                continue
+            if default_val and 'current_timestamp' in str(default_val).lower():
+                continue
+            colunas.append(nome_coluna)
         alvo = input(f"Digite o {coluna_id} do registro que quer atualizar: ").strip()
         if not alvo:
             print("Operação cancelada: ID inválido.")
@@ -107,19 +138,34 @@ def comandos_MySQL_UPDATE_editar(connection):
         valores = []
         partes_do_set = []
         for coluna in colunas:
-            dado = input(f"Digite o novo valor para {coluna}: ")
-            valores.append(dado)
+            info_coluna = [c for c in colunas_completas if c[0] == coluna][0]
+            aceita_nulo = info_coluna[2] == 'YES'
+            
+            mensagem = f"Digite o novo valor para {coluna}"
+            if aceita_nulo:
+                mensagem += " (Pressione Enter para manter/deixar NULO)"
+            mensagem += ": "
+            
+            dado = input(mensagem).strip()
+            
+            if dado == "" and aceita_nulo:
+                valores.append(None)
+            else:
+                valores.append(dado)
+                
             partes_do_set.append(f"{coluna} = %s")
+            
         juntar_campos = ", ".join(partes_do_set) 
         comando_sql = f"UPDATE {tabela} SET {juntar_campos} WHERE {coluna_id} = %s"
         valores.append(alvo)
         
         cursor.execute(comando_sql, valores)
         connection.commit()
+        
         if cursor.rowcount == 0:
-            print(f"\n⚠ Aviso: Nenhum registro encontrado com o {coluna_id} '{alvo}'. Nenhuma alteração foi feita.")
+            print(f"\n⚠ Aviso: Nenhum registro alterado. Verifique se o {coluna_id} '{alvo}' existe.")
         else:
-            print(f"\n✅ Sucesso: Registro com {coluna_id} '{alvo}' atualizado com sucesso!")
+            print(f"\n✅ Sucesso: Registro atualizado!")
     except mysql.connector.Error as err:
         print(f"Erro ao atualizar registro: {err}")
     finally:
@@ -133,21 +179,25 @@ def comandos_MySQL_delete(connection):
         cursor.execute(f"DESCRIBE {tabela}") 
         colunas_completas = cursor.fetchall()
         coluna_id = [col[0] for col in colunas_completas if col[3] == 'PRI'][0]
+        
         print(f"\n--- Colunas disponíveis em {tabela} ---")
         for col in colunas_completas:
             print(f"-> {col[0]}")    
+            
         alvo = input(f"\nDigite o {coluna_id} do registro que quer deletar: ").strip()
         if not alvo:
             print("Operação cancelada: ID inválido.")
             return   
+            
         comando_sql = f"DELETE FROM {tabela} WHERE {coluna_id} = %s"
         valores = [alvo]
         cursor.execute(comando_sql, valores)
         connection.commit()
+        
         if cursor.rowcount == 0:
-            print(f"\n⚠ Aviso: Nenhum registro encontrado com o {coluna_id} '{alvo}'. Nada foi deletado.")
+            print(f"\n⚠ Aviso: Nenhum registro encontrado com o {coluna_id} '{alvo}'.")
         else:
-            print(f"\n✅ Sucesso: Registro {alvo} deletado com sucesso da tabela {tabela}!")
+            print(f"\n✅ Sucesso: Registro deletado!")
     except mysql.connector.Error as err:
         print(f"Erro ao deletar registro: {err}")
     finally:
