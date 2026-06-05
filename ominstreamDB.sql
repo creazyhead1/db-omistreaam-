@@ -1,12 +1,11 @@
-DROP DATABASE IF EXISTS omnistream_db;
-CREATE DATABASE IF NOT EXISTS omnistream_db;
-USE omnistream_db;
+CREATE DATABASE IF NOT EXISTS defaultdb;
+USE defaultdb;
 
 -- ========================
 -- CREATEs
 -- ========================
 
-CREATE TABLE `Usuario` (
+CREATE TABLE IF NOT EXISTS `Usuario` (
   `id_usuario` int PRIMARY KEY AUTO_INCREMENT,
   `nickname` varchar(50) UNIQUE NOT NULL,
   `email` varchar(100) UNIQUE NOT NULL,
@@ -14,7 +13,7 @@ CREATE TABLE `Usuario` (
   `data_cadastro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
-CREATE TABLE `Canal` (
+CREATE TABLE IF NOT EXISTS `Canal` (
   `id_canal` int PRIMARY KEY AUTO_INCREMENT,
   `id_usuario` int UNIQUE NOT NULL,
   `nome_canal` varchar(50) UNIQUE NOT NULL,
@@ -22,7 +21,7 @@ CREATE TABLE `Canal` (
   `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
-CREATE TABLE `Live` (
+CREATE TABLE IF NOT EXISTS `Live` (
   `id_live` int PRIMARY KEY AUTO_INCREMENT,
   `id_canal` int NOT NULL,
   `titulo_live` varchar(100) NOT NULL,
@@ -32,25 +31,25 @@ CREATE TABLE `Live` (
   `status` varchar(20) NOT NULL
 ) ENGINE=InnoDB;
 
-CREATE TABLE `Categoria` (
+CREATE TABLE IF NOT EXISTS `Categoria` (
   `id_categoria` int PRIMARY KEY AUTO_INCREMENT,
   `titulo` varchar(50) UNIQUE NOT NULL,
   `descricao` varchar(200)
 ) ENGINE=InnoDB;
 
-CREATE TABLE `Live_Categoria` (
+CREATE TABLE IF NOT EXISTS `Live_Categoria` (
   `id_live` int NOT NULL,
   `id_categoria` int NOT NULL,
   PRIMARY KEY (`id_live`, `id_categoria`)
 ) ENGINE=InnoDB;
 
-CREATE TABLE `Genero` (
+CREATE TABLE IF NOT EXISTS `Genero` (
   `id_genero` int PRIMARY KEY AUTO_INCREMENT,
   `titulo`    varchar(50) UNIQUE NOT NULL,
   `descricao` varchar(200)
 ) ENGINE=InnoDB;
 
-CREATE TABLE `API_Externa` (
+CREATE TABLE IF NOT EXISTS `API_Externa` (
   `id_api` int PRIMARY KEY AUTO_INCREMENT,
   `id_usuario` int NOT NULL,
   `nome_servico` varchar(100) NOT NULL,
@@ -59,7 +58,7 @@ CREATE TABLE `API_Externa` (
   `status` varchar(20) NOT NULL
 ) ENGINE=InnoDB;
 
-CREATE TABLE `Conteudo_VOD` (
+CREATE TABLE IF NOT EXISTS `Conteudo_VOD` (
   `id_conteudo` int PRIMARY KEY AUTO_INCREMENT,
   `id_api`      int,
   `id_genero`   int,
@@ -69,7 +68,7 @@ CREATE TABLE `Conteudo_VOD` (
   `descricao`   varchar(500)
 ) ENGINE=InnoDB;
 
-CREATE TABLE `Historico_Visualizacao` (
+CREATE TABLE IF NOT EXISTS `Historico_Visualizacao` (
   `id_historico` int PRIMARY KEY AUTO_INCREMENT,
   `id_usuario` int NOT NULL,
   `id_live` int,
@@ -78,14 +77,14 @@ CREATE TABLE `Historico_Visualizacao` (
   `progresso` int
 ) ENGINE=InnoDB;
 
-CREATE TABLE `Inscricao` (
+CREATE TABLE IF NOT EXISTS `Inscricao` (
   `id_usuario` int NOT NULL,
   `id_canal` int NOT NULL,
   `data_inscricao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_usuario`, `id_canal`)
 ) ENGINE=InnoDB;
 
-CREATE TABLE `Chat_mensagem` (
+CREATE TABLE IF NOT EXISTS `Chat_mensagem` (
   `id_chat` int PRIMARY KEY AUTO_INCREMENT,
   `id_usuario` int NOT NULL,
   `id_live` int NOT NULL,
@@ -93,7 +92,7 @@ CREATE TABLE `Chat_mensagem` (
   `conteudo` varchar(200) NOT NULL
 ) ENGINE=InnoDB;
 
-CREATE TABLE `Notificacao` (
+CREATE TABLE IF NOT EXISTS `Notificacao` (
   `id_notificacao` int PRIMARY KEY AUTO_INCREMENT,
   `id_usuario` int NOT NULL,
   `conteudo` varchar(200) NOT NULL,
@@ -120,65 +119,65 @@ ALTER TABLE `Notificacao` ADD FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`
 -- INSERTs
 -- ========================
 
-INSERT INTO `Usuario` (`nickname`, `email`, `senha`) VALUES
+INSERT IGNORE INTO `Usuario` (`nickname`, `email`, `senha`) VALUES
 ('joaogamer', 'joao@email.com', '$2b$12$hashdahashdahashdahashdahashdahashdahashdahashdahash1'),
 ('mariaplays', 'maria@email.com', '$2b$12$hashdahashdahashdahashdahashdahashdahashdahashdahash2'),
 ('carlos_dev', 'carlos@email.com', '$2b$12$hashdahashdahashdahashdahashdahashdahashdahashdahash3');
 
-INSERT INTO `Canal` (`id_usuario`, `nome_canal`, `descricao`) VALUES
+INSERT IGNORE INTO `Canal` (`id_usuario`, `nome_canal`, `descricao`) VALUES
 (1, 'JoaoGamerTV', 'Canal de games e lives'),
 (2, 'MariaPlays', 'Variety streaming'),
 (3, 'CarlosDev', 'Programação ao vivo');
 
-INSERT INTO `Categoria` (`titulo`) VALUES
+INSERT IGNORE INTO `Categoria` (`titulo`) VALUES
 ('Games'),
 ('Programação'),
 ('Variety');
 
-INSERT INTO `Genero` (`titulo`) VALUES
+INSERT IGNORE INTO `Genero` (`titulo`) VALUES
 ('Ação'),
 ('Terror'),
 ('Ficção Científica'),
 ('Infantil'),
 ('Documentário');
 
-INSERT INTO `Live` (`id_canal`, `titulo_live`, `descricao`, `status`) VALUES
+INSERT IGNORE INTO `Live` (`id_canal`, `titulo_live`, `descricao`, `status`) VALUES
 (1, 'Jogando Minecraft ao vivo!', 'Survival com os inscritos', 'encerrada'),
 (2, 'Variety Friday', 'Jogos variados toda sexta', 'encerrada'),
 (3, 'Construindo uma API do zero', 'Live de programação', 'ativa');
 
-INSERT INTO `Live_Categoria` (`id_live`, `id_categoria`) VALUES
+INSERT IGNORE INTO `Live_Categoria` (`id_live`, `id_categoria`) VALUES
 (1, 1),
 (2, 1),
 (2, 3),
 (3, 2);
 
-INSERT INTO `API_Externa` (`id_usuario`, `nome_servico`, `chave_api`, `status`) VALUES
+INSERT IGNORE INTO `API_Externa` (`id_usuario`, `nome_servico`, `chave_api`, `status`) VALUES
 (1, 'Jellyfin', 'jf_abc123xyz456', 'ativa'),
 (2, 'Plex', 'plx_def789uvw012', 'ativa');
 
-INSERT INTO `Conteudo_VOD` (`id_api`, `id_genero`, `titulo`, `tipo`, `ano`) VALUES
+INSERT IGNORE INTO `Conteudo_VOD` (`id_api`, `id_genero`, `titulo`, `tipo`, `ano`) VALUES
 (1, 3, 'Interestelar', 'filme', 2014),
 (1, NULL, 'Breaking Bad', 'serie', 2008),
 (2, 3, 'Duna', 'filme', 2021),
 (NULL, 4, 'Moana', 'filme', 2016);
 
-INSERT INTO `Historico_Visualizacao` (`id_usuario`, `id_live`, `id_conteudo`, `progresso`) VALUES
+INSERT IGNORE INTO `Historico_Visualizacao` (`id_usuario`, `id_live`, `id_conteudo`, `progresso`) VALUES
 (1, 1, NULL, NULL),
 (1, NULL, 1, 3600),
 (2, NULL, 3, 1800);
 
-INSERT INTO `Inscricao` (`id_usuario`, `id_canal`) VALUES
+INSERT IGNORE INTO `Inscricao` (`id_usuario`, `id_canal`) VALUES
 (1, 2),
 (1, 3),
 (2, 1);
 
-INSERT INTO `Chat_mensagem` (`id_usuario`, `id_live`, `conteudo`) VALUES
+INSERT IGNORE INTO `Chat_mensagem` (`id_usuario`, `id_live`, `conteudo`) VALUES
 (2, 1, 'Que resenha!'),
 (3, 1, 'Pinadeira demais.'),
 (1, 3, 'Não sabe buildar deck award');
 
-INSERT INTO `Notificacao` (`id_usuario`, `conteudo`, `lida`) VALUES
+INSERT IGNORE INTO `Notificacao` (`id_usuario`, `conteudo`, `lida`) VALUES
 (1, 'MariaPlays começou uma live!', false),
 (1, 'CarlosDev começou uma live!', false),
 (2, 'JoaoGamerTV começou uma live!', false);
@@ -242,7 +241,7 @@ ORDER BY total_inscritos DESC;
 -- ========================
 
 DELIMITER $$
-
+DROP PROCEDURE IF EXISTS BuscarHistorico $$
 CREATE PROCEDURE BuscarHistorico(IN p_nickname VARCHAR(50))
 BEGIN
   SELECT
@@ -268,7 +267,7 @@ CALL BuscarHistorico('joaogamer');
 -- VIEW
 -- ========================
 
-CREATE VIEW Resumo_Canal AS
+CREATE OR REPLACE VIEW Resumo_Canal AS
 SELECT
   c.nome_canal,
   u.nickname AS dono,
@@ -295,7 +294,7 @@ SELECT * FROM Resumo_Canal;
 -- ========================
 
 DELIMITER $$
-
+DROP TRIGGER IF EXISTS NotificarInscritos $$
 CREATE TRIGGER NotificarInscritos
 AFTER INSERT ON Live
 FOR EACH ROW
